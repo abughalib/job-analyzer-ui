@@ -36,6 +36,17 @@ export class Chat implements OnInit, OnDestroy {
   chatHistory: ChatContent[] = [];
   visibleThinkMessages = new Set<number>();
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('messagesContainer')
+  messagesContainer!: ElementRef<HTMLDivElement>;
+
+  private scrollToBottom(): void {
+    setTimeout(() => {
+      if (this.messagesContainer) {
+        const element = this.messagesContainer.nativeElement;
+        element.scrollTop = element.scrollHeight;
+      }
+    });
+  }
 
   toggleThink(index: number) {
     if (this.visibleThinkMessages.has(index)) {
@@ -99,13 +110,8 @@ export class Chat implements OnInit, OnDestroy {
     this.chatService.connectWebSocket(this.WEBSOCKET_API);
     this.chatService.chatHistory$.subscribe((history) => {
       this.chatHistory = history;
+      this.scrollToBottom();
     });
-    // this.chatService.thinkMessage$.subscribe((thinkMsg) => {
-    //   console.log('Think message updated:', thinkMsg);
-    // });
-    // this.chatService.contentMessage$.subscribe((contentMsg) => {
-    //   console.log('Content message updated:', contentMsg);
-    // });
   }
 
   ngAfterViewInit() {
